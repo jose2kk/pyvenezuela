@@ -1,0 +1,4 @@
+-r requirements.txt
+isort==5.13.2
+pytest==8.2.1
+ruff==0.4.4
