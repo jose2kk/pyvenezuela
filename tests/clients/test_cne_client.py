@@ -11,7 +11,7 @@ from tests.conftest import (
 )
 
 
-def test_query_id__successfull(
+def test_query_id__successful(
     cne_persona_model: cne_schemas.CNEPersonaModel, requests_mock: requests_mock.Mocker
 ) -> None:
     nationality, id = cne_persona_model.id.split("-")
