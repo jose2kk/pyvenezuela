@@ -1,6 +1,7 @@
 """CNE Fixtures"""
 
 import pytest
+
 from pyvenezuela.schemas import cne as cne_schemas
 
 

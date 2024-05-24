@@ -4,10 +4,9 @@ import re
 from typing import Optional
 
 import requests
-from pyvenezuela.schemas import (
-    cne as cne_schemas,
-    persona as persona_schemas,
-)
+
+from pyvenezuela.schemas import cne as cne_schemas
+from pyvenezuela.schemas import persona as persona_schemas
 
 BASE_URL = "http://www.cne.gob.ve/web/registro_electoral/ce.php"
 PATTERNS = dict(
@@ -22,27 +21,20 @@ PATTERNS = dict(
 
 
 def query_id(
-    nationality: cne_schemas.NationalityEnum,
-    id: persona_schemas.ID,
+    nationality: cne_schemas.NationalityEnum, id: persona_schemas.ID
 ) -> Optional[cne_schemas.CNEPersonaModel]:
     try:
         response = requests.get(
-            url=BASE_URL,
-            params=dict(
-                nacionalidad=nationality,
-                cedula=id,
-            ),
+            url=BASE_URL, params=dict(nacionalidad=nationality, cedula=id)
         )
         response.raise_for_status()
-        return cne_schemas.CNEPersonaModel.model_validate({
-            key: re.search(pattern, response.text, re.DOTALL).group(1).strip()
-            for key, pattern in PATTERNS.items()
-        })
+        return cne_schemas.CNEPersonaModel.model_validate(
+            {
+                key: re.search(pattern, response.text, re.DOTALL).group(1).strip()
+                for key, pattern in PATTERNS.items()
+            }
+        )
     except requests.HTTPError:
         return None
     except AttributeError:
         return None
-
-
-if __name__ == "__main__":
-    query_id(nationality=cne_schemas.NationalityEnum.VENEZUELAN, number="20726224")
