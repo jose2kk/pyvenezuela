@@ -57,7 +57,6 @@ exclude = [
 line-length = 88
 indent-width = 4
 
-# Assume Python 3.8
 target-version = "py39"
 
 [tool.ruff.lint]
@@ -102,5 +101,5 @@ docstring-code-format = false
 docstring-code-line-length = "dynamic"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

@@ -20,7 +20,6 @@ def _request(url: str) -> Optional[str]:
     try:
         response = requests.get(url=url)
         response.raise_for_status()
-        # print(response.content.strip())
         return bs4.BeautifulSoup(response.content, "html.parser")
     except requests.HTTPError:
         return None
