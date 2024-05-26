@@ -102,8 +102,6 @@ def get_rates_by_bcv() -> Optional[Dict[bcv_schemas.BCVCurrencyEnum, float]]:
     if not soup:
         return None
 
-    print(soup.find(id="block-views-47bbee0af9473fcf0d6df64198f4df6b"))
-
     eur_rate = soup.find(id="euro").text.strip()
     cny_rate = soup.find(id="yuan").text.strip()
     try_rate = soup.find(id="lira").text.strip()
