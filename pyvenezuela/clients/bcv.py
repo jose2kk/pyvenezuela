@@ -18,7 +18,10 @@ RATES_URL = (
 
 def _request(url: str) -> Optional[str]:
     try:
-        response = requests.get(url=url)
+        response = requests.get(
+            url=url,
+            verify=False,  # TODO: figure out what to do here with an actual certificate
+        )
         response.raise_for_status()
         return bs4.BeautifulSoup(response.content, "html.parser")
     except requests.HTTPError:
