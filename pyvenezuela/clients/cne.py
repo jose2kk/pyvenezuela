@@ -3,7 +3,7 @@
 import re
 from typing import Optional
 
-import requests
+import requests  # type: ignore
 
 from pyvenezuela.schemas import cne as cne_schemas
 from pyvenezuela.schemas import persona as persona_schemas

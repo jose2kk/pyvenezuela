@@ -5,9 +5,11 @@ import datetime
 import re
 from typing import Dict, List, Optional
 
-import bs4
-import requests
+import bs4  # type: ignore
+import requests  # type: ignore
 
+from pyvenezuela.cache import inmemory_cache
+from pyvenezuela.decorators import cached
 from pyvenezuela.schemas import bcv as bcv_schemas
 
 BCV_URL = "https://www.bcv.org.ve/"
@@ -77,7 +79,7 @@ def _get_rates(
 
         data[bank].append(dict(date=date, buy_rate=buy_rate, sell_rate=sell_rate))
 
-    return bcv_schemas.BCVBanksRatesModel.model_validate(data)
+    return bcv_schemas.BCVBanksRatesModel.model_validate(data).root
 
 
 def _parse_bcv_rate(text: str) -> float:
@@ -100,6 +102,13 @@ def get_rates_by_bank(
     return rates.get(bank, []) if rates else []
 
 
+# TODO: This decorator should take bcv chanmges into account
+@cached(
+    cache=inmemory_cache,
+    cached_key="bcv_rates_by_bcv",
+    ttl_in_seconds=8 * 60 * 60,
+    use_expired=True,
+)
 def get_rates_by_bcv() -> Optional[Dict[bcv_schemas.BCVCurrencyEnum, float]]:
     soup = _get_bcv_soup()
     if not soup:
