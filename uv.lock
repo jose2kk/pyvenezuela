@@ -488,20 +488,20 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "beautifulsoup4", specifier = ">=4.12" },
-    { name = "pydantic", specifier = ">=2.0" },
-    { name = "requests", specifier = ">=2.32" },
+    { name = "beautifulsoup4", specifier = ">=4.14.3" },
+    { name = "pydantic", specifier = ">=2.13.3" },
+    { name = "requests", specifier = ">=2.33.1" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "coverage", specifier = ">=7.5" },
-    { name = "pytest", specifier = ">=8.2" },
-    { name = "requests-mock", specifier = ">=1.12" },
-    { name = "ruff", specifier = ">=0.4" },
-    { name = "ty", specifier = ">=0.0.1a8" },
-    { name = "types-beautifulsoup4", specifier = ">=4.12" },
-    { name = "types-requests", specifier = ">=2.32" },
+    { name = "coverage", specifier = ">=7.13.5" },
+    { name = "pytest", specifier = ">=9.0.3" },
+    { name = "requests-mock", specifier = ">=1.12.1" },
+    { name = "ruff", specifier = ">=0.15.11" },
+    { name = "ty", specifier = ">=0.0.31" },
+    { name = "types-beautifulsoup4", specifier = ">=4.12.0.20250516" },
+    { name = "types-requests", specifier = ">=2.33.0.20260408" },
 ]
 
 [[package]]
