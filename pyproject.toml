@@ -1,105 +1,90 @@
-# [tool.mypy]
-# strict = true
-
-# [[tool.mypy.overrides]]
-# module = "fastapi.concurrency"
-# warn_unused_ignores = false
-# ignore_missing_imports = true
-
-# [[tool.mypy.overrides]]
-# module = "fastapi.tests.*"
-# ignore_missing_imports = true
-# check_untyped_defs = true
-
-# [[tool.mypy.overrides]]
-# module = "docs_src.*"
-# disallow_incomplete_defs = false
-# disallow_untyped_defs = false
-# disallow_untyped_calls = false
-
-[tool.isort]
-profile = "hug"
-src_paths = ["pyvenezuela", "tests"]
-sections=["STDLIB","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"]
-
-[tool.ruff]
-# Exclude a variety of commonly ignored directories.
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".git-rewrite",
-    ".hg",
-    ".ipynb_checkpoints",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pyenv",
-    ".pytest_cache",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    ".vscode",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "site-packages",
-    "venv",
+[project]
+name = "pyvenezuela"
+dynamic = ["version"]
+description = "Python library to query Venezuela's data (BCV and CNE)"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Jose Andres Morales", email = "jose2kk@gmail.com" }]
+requires-python = ">=3.10"
+keywords = ["venezuela", "bcv", "cne", "exchange-rate", "cedula", "dolar"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Development Status :: 4 - Beta",
+]
+dependencies = [
+    "beautifulsoup4>=4.12",
+    "pydantic>=2.0",
+    "requests>=2.32",
 ]
 
-# Same as Black.
-line-length = 88
-indent-width = 4
+[project.urls]
+Homepage = "https://github.com/jose2kk/pyvenezuela"
+Repository = "https://github.com/jose2kk/pyvenezuela"
+Documentation = "https://pyvenezuela.jose2kk.com"
+Issues = "https://github.com/jose2kk/pyvenezuela/issues"
 
-target-version = "py39"
-
-[tool.ruff.lint]
-# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
-# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
-# McCabe complexity (`C901`) by default.
-select = ["E4", "E7", "E9", "F"]
-ignore = []
-
-# Allow fix for all enabled rules (when `--fix`) is provided.
-fixable = ["ALL"]
-unfixable = []
-
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-[tool.ruff.format]
-# Like Black, use double quotes for strings.
-quote-style = "double"
-
-# Like Black, indent with spaces, rather than tabs.
-indent-style = "space"
-
-# Like Black, respect magic trailing commas.
-skip-magic-trailing-comma = true
-
-# Like Black, automatically detect the appropriate line ending.
-line-ending = "auto"
-
-# Enable auto-formatting of code examples in docstrings. Markdown,
-# reStructuredText code/literal blocks and doctests are all supported.
-#
-# This is currently disabled by default, but it is planned for this
-# to be opt-out in the future.
-docstring-code-format = false
-
-# Set the line length limit used when formatting code snippets in
-# docstrings.
-#
-# This only has an effect when the `docstring-code-format` setting is
-# enabled.
-docstring-code-line-length = "dynamic"
+[dependency-groups]
+dev = [
+    "coverage>=7.5",
+    "pytest>=8.2",
+    "requests-mock>=1.12",
+    "ruff>=0.4",
+    "ty>=0.0.1a8",
+    "types-beautifulsoup4>=4.12",
+    "types-requests>=2.32",
+]
 
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pyvenezuela"]
+
+[tool.uv]
+package = true
+
+[tool.ty.environment]
+python-version = "3.10"
+
+[tool.ruff]
+line-length = 100
+indent-width = 4
+target-version = "py310"
+exclude = [".venv", "dist", "build", "site"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
+ignore = ["B008", "SIM108"]
+fixable = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/conftest.py" = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pyvenezuela"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["pyvenezuela"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true

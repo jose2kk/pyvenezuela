@@ -1,4 +1,4 @@
-name: Test
+name: CI
 
 on:
   push:
@@ -9,73 +9,50 @@ on:
       - opened
       - synchronize
   schedule:
-    # cron every week on monday
     - cron: "0 0 * * 1"
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.11"
-          # Issue ref: https://github.com/actions/setup-python/issues/436
-          # cache: "pip"
-          # cache-dependency-path: pyproject.toml
-      - uses: actions/cache@v4
-        id: cache
-        with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml', 'requirements-dev.txt', 'requirements-docs-tests.txt') }}-test-v08
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: pip install -r requirements-dev.txt
+          enable-cache: true
+      - name: Install dependencies
+        run: uv sync --locked
       - name: Lint
-        run: bash scripts/lint.sh
+        run: |
+          uv run ruff check pyvenezuela tests
+          uv run ruff format pyvenezuela tests --check
+      - name: Type check
+        run: uv run ty check pyvenezuela
 
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version:
-          - "3.12"
-          - "3.11"
           - "3.10"
-          - "3.9"
+          - "3.11"
+          - "3.12"
+          - "3.13"
       fail-fast: false
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
+          enable-cache: true
           python-version: ${{ matrix.python-version }}
-          # Issue ref: https://github.com/actions/setup-python/issues/436
-          # cache: "pip"
-          # cache-dependency-path: pyproject.toml
-      - uses: actions/cache@v4
-        id: cache
-        with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml', 'requirements-dev.txt', 'requirements-docs-tests.txt') }}-test-v08
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: pip install -r requirements-dev.txt
-      - run: mkdir coverage
+      - name: Install dependencies
+        run: uv sync --locked
+      - run: mkdir -p coverage
       - name: Test
-        run: bash scripts/test.sh
+        run: uv run coverage run -m pytest tests
         env:
           COVERAGE_FILE: coverage/.coverage.${{ runner.os }}-py${{ matrix.python-version }}
-          CONTEXT: ${{ runner.os }}-py${{ matrix.python-version }}
       - name: Store coverage files
         uses: actions/upload-artifact@v4
         with:
@@ -86,45 +63,36 @@ jobs:
     needs: [test]
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
-          python-version: '3.9'
-          # Issue ref: https://github.com/actions/setup-python/issues/436
-          # cache: "pip"
-          # cache-dependency-path: pyproject.toml
+          enable-cache: true
+      - name: Install dependencies
+        run: uv sync --locked
       - name: Get coverage files
         uses: actions/download-artifact@v4
         with:
           pattern: coverage-*
           path: coverage
           merge-multiple: true
-      - run: pip install coverage[toml]
-      - run: ls -la coverage
-      - run: coverage combine coverage
-      - run: coverage report
-      - run: coverage html --show-contexts --title "Coverage for ${{ github.sha }}"
+      - name: Combine and report coverage
+        run: |
+          uv run coverage combine coverage
+          uv run coverage report
       - name: Store coverage HTML
         uses: actions/upload-artifact@v4
         with:
           name: coverage-html
           path: htmlcov
 
-  # https://github.com/marketplace/actions/alls-green#why
-  check:  # This job does nothing and is only used for the branch protection
+  check:
     if: always()
     needs:
+      - lint
       - coverage-combine
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
       - name: Decide whether the needed jobs succeeded or failed
         uses: re-actors/alls-green@release/v1
         with:

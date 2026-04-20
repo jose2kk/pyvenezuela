@@ -1,9 +1,8 @@
 """CNE Client."""
 
 import re
-from typing import Optional
 
-import requests  # type: ignore
+import requests
 
 from pyvenezuela.schemas import cne as cne_schemas
 from pyvenezuela.schemas import persona as persona_schemas
@@ -15,22 +14,26 @@ PATTERNS = dict(
     state=r'Estado:</font></b></td>\s*<td align="left">(.*?)</td>',
     municipality=r'Municipio:</font></b></td.*?>\s*<td align="left">(.*?)</td>',
     parish=r'Parroquia:</font.*?></b></td>\s*<td align="left">(.*?)</td>',
-    voting_center=r'Centro:</font></b></td>\s*<td align="left"><font color="#0000FF">(.*?)</font></td>',
-    voting_center_address=r'Dirección:</font></b></td>\s*<td align="left"><font color="#0000FF">(.*?)</font></td>',
+    voting_center=(
+        r'Centro:</font></b></td>\s*<td align="left">'
+        r'<font color="#0000FF">(.*?)</font></td>'
+    ),
+    voting_center_address=(
+        r'Dirección:</font></b></td>\s*<td align="left">'
+        r'<font color="#0000FF">(.*?)</font></td>'
+    ),
 )
 
 
 def query_id(
     nationality: cne_schemas.NationalityEnum, id: persona_schemas.ID
-) -> Optional[cne_schemas.CNEPersonaModel]:
+) -> cne_schemas.CNEPersonaModel | None:
     try:
-        response = requests.get(
-            url=BASE_URL, params=dict(nacionalidad=nationality, cedula=id)
-        )
+        response = requests.get(url=BASE_URL, params=dict(nacionalidad=nationality, cedula=id))
         response.raise_for_status()
         return cne_schemas.CNEPersonaModel.model_validate(
             {
-                key: re.search(pattern, response.text, re.DOTALL).group(1).strip()
+                key: re.search(pattern, response.text, re.DOTALL).group(1).strip()  # ty: ignore[unresolved-attribute]
                 for key, pattern in PATTERNS.items()
             }
         )

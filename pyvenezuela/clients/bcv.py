@@ -3,22 +3,19 @@
 import collections
 import datetime
 import re
-from typing import Dict, List, Optional
 
-import bs4  # type: ignore
-import requests  # type: ignore
+import bs4
+import requests
 
 from pyvenezuela.cache import inmemory_cache
 from pyvenezuela.decorators import cached
 from pyvenezuela.schemas import bcv as bcv_schemas
 
 BCV_URL = "https://www.bcv.org.ve/"
-RATES_URL = (
-    "https://www.bcv.org.ve/cambiaria/export/tasas-informativas-sistema-bancario"
-)
+RATES_URL = "https://www.bcv.org.ve/cambiaria/export/tasas-informativas-sistema-bancario"
 
 
-def _request(url: str) -> Optional[str]:
+def _request(url: str) -> bs4.BeautifulSoup | None:
     try:
         response = requests.get(
             url=url,
@@ -30,17 +27,17 @@ def _request(url: str) -> Optional[str]:
         return None
 
 
-def _get_bcv_soup() -> Optional[bs4.BeautifulSoup]:
+def _get_bcv_soup() -> bs4.BeautifulSoup | None:
     return _request(url=BCV_URL)
 
 
-def _get_banks_soup() -> Optional[bs4.BeautifulSoup]:
+def _get_banks_soup() -> bs4.BeautifulSoup | None:
     return _request(url=RATES_URL)
 
 
 def _get_rates(
-    start_date: Optional[datetime.date] = None, end_date: Optional[datetime.date] = None
-) -> Optional[Dict[bcv_schemas.BankEnum, List[bcv_schemas.BCVBankRatesModel]]]:
+    start_date: datetime.date | None = None, end_date: datetime.date | None = None
+) -> dict[bcv_schemas.BankEnum, list[bcv_schemas.BCVBankRatesModel]] | None:
     if start_date and end_date and start_date > end_date:
         return None
 
@@ -52,11 +49,11 @@ def _get_rates(
     if not soup:
         return None
 
-    data: Dict[str, List[Dict[str, str]]] = collections.defaultdict(list)
+    data: dict[str, list[dict[str, str]]] = collections.defaultdict(list)
 
-    rows: List[bs4.element.Tag] = soup.find_all(name="tr")
+    rows: list[bs4.element.Tag] = soup.find_all(name="tr")
     for row in rows:
-        columns: List[bs4.element.Tag] = row.find_all(name="td")
+        columns: list[bs4.element.Tag] = row.find_all(name="td")
         if not columns or len(columns) < 4:
             # skipping unsupported format
             continue
@@ -87,16 +84,16 @@ def _parse_bcv_rate(text: str) -> float:
 
 
 def get_rates(
-    start_date: Optional[datetime.date] = None, end_date: Optional[datetime.date] = None
-) -> Optional[Dict[bcv_schemas.BankEnum, List[bcv_schemas.BCVBankRatesModel]]]:
+    start_date: datetime.date | None = None, end_date: datetime.date | None = None
+) -> dict[bcv_schemas.BankEnum, list[bcv_schemas.BCVBankRatesModel]] | None:
     return _get_rates(start_date=start_date, end_date=end_date)
 
 
 def get_rates_by_bank(
     bank: bcv_schemas.BankEnum,
-    start_date: Optional[datetime.date] = None,
-    end_date: Optional[datetime.date] = None,
-) -> List[bcv_schemas.BCVBankRatesModel]:
+    start_date: datetime.date | None = None,
+    end_date: datetime.date | None = None,
+) -> list[bcv_schemas.BCVBankRatesModel]:
     rates = _get_rates(start_date=start_date, end_date=end_date)
 
     return rates.get(bank, []) if rates else []
@@ -109,16 +106,25 @@ def get_rates_by_bank(
     ttl_in_seconds=8 * 60 * 60,
     use_expired=True,
 )
-def get_rates_by_bcv() -> Optional[Dict[bcv_schemas.BCVCurrencyEnum, float]]:
+def get_rates_by_bcv() -> dict[bcv_schemas.BCVCurrencyEnum, float] | None:
     soup = _get_bcv_soup()
     if not soup:
         return None
 
-    eur_rate = soup.find(id="euro").text.strip()
-    cny_rate = soup.find(id="yuan").text.strip()
-    try_rate = soup.find(id="lira").text.strip()
-    rub_rate = soup.find(id="rublo").text.strip()
-    usd_rate = soup.find(id="dolar").text.strip()
+    eur_tag = soup.find(id="euro")
+    cny_tag = soup.find(id="yuan")
+    try_tag = soup.find(id="lira")
+    rub_tag = soup.find(id="rublo")
+    usd_tag = soup.find(id="dolar")
+
+    if not (eur_tag and cny_tag and try_tag and rub_tag and usd_tag):
+        return None
+
+    eur_rate = eur_tag.text.strip()
+    cny_rate = cny_tag.text.strip()
+    try_rate = try_tag.text.strip()
+    rub_rate = rub_tag.text.strip()
+    usd_rate = usd_tag.text.strip()
 
     if not (eur_rate and cny_rate and try_rate and rub_rate and usd_rate):
         return None

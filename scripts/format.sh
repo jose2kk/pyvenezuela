@@ -1,5 +1,7 @@
-#!/bin/sh -e
+#!/usr/bin/env bash
+
+set -e
 set -x
 
-ruff check pyvenezuela tests docs_src scripts --fix
-ruff format pyvenezuela tests docs_src scripts
+ruff format pyvenezuela tests
+ruff check pyvenezuela tests --fix
