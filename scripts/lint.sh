@@ -3,6 +3,6 @@
 set -e
 set -x
 
-# mypy pyvenezuela
-ruff check pyvenezuela tests scripts
+ruff check pyvenezuela tests
 ruff format pyvenezuela tests --check
+ty check pyvenezuela

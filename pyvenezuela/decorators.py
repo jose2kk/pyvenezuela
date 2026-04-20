@@ -2,7 +2,8 @@
 
 import functools
 import time
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 from pyvenezuela.cache import Cache
 from pyvenezuela.schemas.cache import CacheValueModel
@@ -14,7 +15,7 @@ def cached(
     ttl_in_seconds: int,
     use_expired: bool = False,
 ) -> Callable:
-    def _handle_function_call(f: Callable, *args, **kwargs) -> Optional[CacheValueModel]:
+    def _handle_function_call(f: Callable, *args, **kwargs) -> CacheValueModel | None:
         """In case there is an error with the function call, None is returned."""
         try:
             return f(*args, **kwargs)
@@ -40,5 +41,7 @@ def cached(
                     cache.set(cached_key, result, ttl_in_seconds=ttl_in_seconds)
                     return result
                 return None
+
         return inner
+
     return decorator

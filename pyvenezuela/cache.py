@@ -2,16 +2,16 @@
 
 import abc
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pyvenezuela.schemas.cache import CacheValueModel
 
 
-class Cache:
+class Cache(abc.ABC):
     """Cache."""
 
     @abc.abstractmethod
-    def get(self, key: str) -> Optional[CacheValueModel]:
+    def get(self, key: str) -> CacheValueModel | None:
         raise NotImplementedError("Child needs to implement `get` method.")
 
     @abc.abstractmethod
@@ -23,9 +23,9 @@ class InMemoryCache(Cache):
     """In Memory Cache."""
 
     def __init__(self) -> None:
-        self.cache: Dict[str, CacheValueModel] = {}
+        self.cache: dict[str, CacheValueModel] = {}
 
-    def get(self, key: str) -> Optional[CacheValueModel]:
+    def get(self, key: str) -> CacheValueModel | None:
         return self.cache.get(key)
 
     def set(self, key: str, value: Any, ttl_in_seconds: int) -> None:

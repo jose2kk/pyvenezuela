@@ -2,7 +2,6 @@
 
 import datetime
 import enum
-from typing import Dict, List
 
 from pydantic import BaseModel, RootModel, field_validator
 
@@ -42,6 +41,7 @@ class BCVBankRatesModel(BaseModel):
     sell_rate: float
 
     @field_validator("date", mode="before")
+    @classmethod
     def validate_date(cls, v: str) -> datetime.date:
         return datetime.datetime.strptime(v, "%d-%m-%Y").date()
 
@@ -49,7 +49,7 @@ class BCVBankRatesModel(BaseModel):
 class BCVBanksRatesModel(RootModel):
     """BCV Bank Model."""
 
-    root: Dict[BankEnum, List[BCVBankRatesModel]]
+    root: dict[BankEnum, list[BCVBankRatesModel]]
 
 
 class BCVCurrencyEnum(str, enum.Enum):
@@ -65,4 +65,4 @@ class BCVCurrencyEnum(str, enum.Enum):
 class BCVRatesModel(RootModel):
     """BCV Rates Model."""
 
-    root: Dict[BCVCurrencyEnum, float]
+    root: dict[BCVCurrencyEnum, float]

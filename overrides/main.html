@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  {% if page and page.meta %}
+    {% set description = page.meta.get('description', config.site_description) %}
+    {% set title = page.meta.get('title', page.title) ~ " - " ~ config.site_name %}
+  {% else %}
+    {% set description = config.site_description %}
+    {% set title = config.site_name %}
+  {% endif %}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:description" content="{{ description }}">
+  <meta property="og:url" content="{{ page.canonical_url if page else config.site_url }}">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:locale" content="es_VE">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ title }}">
+  <meta name="twitter:description" content="{{ description }}">
+  <meta name="keywords" content="pyvenezuela, python, bcv, cne, venezuela, dolar, tasa de cambio, cedula, registro electoral">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "pyvenezuela",
+    "url": "{{ config.site_url }}",
+    "description": "{{ config.site_description }}",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "macOS, Linux, Windows",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "{{ config.site_author }}",
+      "url": "https://github.com/jose2kk"
+    },
+    "codeRepository": "{{ config.repo_url }}",
+    "license": "https://opensource.org/licenses/MIT"
+  }
+  </script>
+{% endblock %}

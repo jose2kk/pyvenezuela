@@ -1,0 +1,69 @@
+site_name: pyvenezuela
+site_url: https://pyvenezuela.jose2kk.com
+site_description: Librería Python para consultar datos de Venezuela (BCV y CNE)
+site_author: Jose Andres Morales
+repo_url: https://github.com/jose2kk/pyvenezuela
+repo_name: jose2kk/pyvenezuela
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jose2kk/pyvenezuela
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/pyvenezuela
+
+plugins:
+  - search
+  - social
+  - meta
+
+theme:
+  name: material
+  custom_dir: overrides
+  language: es
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: red
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Cambiar a modo oscuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: red
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Cambiar a modo claro
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+    - search.suggest
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Inicio: index.md
+  - Guía de inicio: inicio.md
+  - Clientes:
+    - BCV: bcv.md
+    - CNE: cne.md
+  - Sistema de caché: cache.md
