@@ -48,6 +48,9 @@ build-backend = "hatchling.build"
 [tool.hatch.version]
 source = "vcs"
 
+[tool.hatch.version.raw-options]
+fallback_version = "0.0.0"
+
 [tool.hatch.build.targets.wheel]
 packages = ["pyvenezuela"]
 
