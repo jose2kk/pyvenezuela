@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "uv pip install -r requirements-docs.txt --system",
+  "installCommand": "uv venv && uv pip install -r requirements-docs.txt",
   "buildCommand": "uv run mkdocs build",
   "outputDirectory": "site"
 }

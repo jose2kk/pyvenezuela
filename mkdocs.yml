@@ -14,7 +14,8 @@ extra:
 
 plugins:
   - search
-  - social
+  - social:
+      enabled: !ENV [ENABLE_SOCIAL_CARDS, false]
   - meta
 
 theme:
