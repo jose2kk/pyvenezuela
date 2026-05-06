@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://pyvenezuela.jose2kk.com
+    about: Check the docs for usage guides and API reference.
