@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "schedule:earlyMondays",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "groupName": "Python dependencies",
+      "groupSlug": "python-deps",
+      "matchDatasources": ["pypi"],
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "groupName": "Python major updates",
+      "groupSlug": "python-major",
+      "matchDatasources": ["pypi"],
+      "matchUpdateTypes": ["major"]
+    },
+    {
+      "groupName": "GitHub Actions",
+      "groupSlug": "github-actions",
+      "matchManagers": ["github-actions"]
+    }
+  ]
+}
