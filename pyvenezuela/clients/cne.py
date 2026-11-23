@@ -31,13 +31,13 @@ def query_id(
     try:
         response = requests.get(url=BASE_URL, params=dict(nacionalidad=nationality, cedula=id))
         response.raise_for_status()
-        return cne_schemas.CNEPersonaModel.model_validate(
-            {
-                key: re.search(pattern, response.text, re.DOTALL).group(1).strip()  # ty: ignore[unresolved-attribute]
-                for key, pattern in PATTERNS.items()
-            }
-        )
     except requests.HTTPError:
         return None
-    except AttributeError:
-        return None
+
+    data = {}
+    for key, pattern in PATTERNS.items():
+        match = re.search(pattern, response.text, re.DOTALL)
+        if match is None:
+            return None
+        data[key] = match.group(1).strip()
+    return cne_schemas.CNEPersonaModel.model_validate(data)
