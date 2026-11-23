@@ -26,6 +26,11 @@
       "groupName": "GitHub Actions",
       "groupSlug": "github-actions",
       "matchManagers": ["github-actions"]
+    },
+    {
+      "description": "Python version bumps need approval: Vercel's uv may not support new releases yet",
+      "matchManagers": ["pyenv"],
+      "dependencyDashboardApproval": true
     }
   ]
 }
